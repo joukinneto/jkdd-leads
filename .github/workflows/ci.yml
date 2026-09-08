@@ -1,0 +1,25 @@
+name: JKDD Leads Dev/Test CI
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate app
+        run: |
+          set -e
+          test -f index.html
+          grep -q "JKDD Leads" index.html
+          grep -q "Primeiro acesso" index.html
+          grep -q "AI Copilot" index.html
+          grep -q "Voice Lab" index.html
+          ! grep -Eq "945.?275.?4375|561.?990.?6825|561.?990.?6807" index.html
+          echo "STATIC_VALIDATION=PASS"
