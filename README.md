@@ -1,15 +1,19 @@
-# 🎯 JKDD Leads
-
-**JKDD TECH — Lead Acquisition, Qualification, Routing & Measurement**
-
-Status: 🚧 **Development / Test**
+# 🎯 JKDD Leads — GitHub Pages Development/Test v0.6.0
 
 Product key: `jkdd_leads`
 
-Canonical product governance: **🥇 JKDD Leads — 01.0 — Foundation Principal — Governança e Integração**.
+Environment: Development/Test
+Production: 🔒 UNTOUCHED
+Budget: US$ 0
 
-Shared platform capabilities such as Authentication, Session, Identity, Companies/Tenants, Memberships, RBAC, RLS, Audit, Storage, Settings and i18n are owned by **🧱 JKDD TECH Foundation** and must be reused rather than recreated locally.
+Canonical ownership:
+- Lead domain: 🎯 JKDD Leads
+- Auth/Session/Identity/Companies/Memberships/RBAC/RLS/Audit/Settings/i18n: 🧱 JKDD TECH Foundation
 
-Core rule: `ONE LEAD → ONE CANONICAL RECORD → MULTIPLE PRODUCT VIEWS`.
+Current static build includes Dashboard, Lead Intake/Inbox, deterministic scoring and qualification, AI Copilot, AI Voice Lab simulation, automation, analytics, settings, and Foundation-compatible first-access UX shell.
 
-Production: 🔒 **UNTOUCHED**.
+Security boundary:
+- No real password is persisted or validated by this static build.
+- Personal test phone numbers are not hardcoded in repository source.
+- Private test phones are entered locally in Settings and stored only in that browser.
+- Canonical database and real Foundation Auth remain pending separate gates.
