@@ -1,0 +1,50 @@
+name: JKDD Leads Static QA
+
+on:
+  push:
+    branches:
+      - main
+      - feature/github-pages-v0.5.1
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  static-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify required files
+        run: |
+          test -f index.html
+          test -f README.md
+
+      - name: Extract inline JavaScript
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          html = Path('index.html').read_text(encoding='utf-8')
+          start = html.index('<script>') + len('<script>')
+          end = html.index('</script>', start)
+          Path('/tmp/jkdd-leads-app.js').write_text(html[start:end], encoding='utf-8')
+          forbidden = ['9452754375', '5619906825', '5619906807', '275-4375', '990-6825', '990-6807']
+          found = [item for item in forbidden if item in html]
+          if found:
+              raise SystemExit(f'Personal test phone leaked into source: {found}')
+          print('PII_HARDCODE_CHECK=PASS')
+          PY
+
+      - name: JavaScript syntax
+        run: node --check /tmp/jkdd-leads-app.js
+
+      - name: Governance markers
+        run: |
+          grep -q 'Development/Test' index.html
+          grep -q 'Production 🔒' index.html
+          grep -q 'JKDD TECH Foundation' index.html
+          echo 'STATIC_QA=PASS'
