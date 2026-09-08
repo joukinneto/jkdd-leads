@@ -25,11 +25,14 @@ jobs:
         uses: actions/checkout@v4
       - name: Validate static app
         run: |
+          set -e
           test -f index.html
           grep -q "JKDD Leads" index.html
           ! grep -Eq "945.?275.?4375|561.?990.?6825|561.?990.?6807" index.html
-      - name: Configure Pages
+      - name: Configure and enable Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - name: Upload static site
         uses: actions/upload-pages-artifact@v3
         with:
