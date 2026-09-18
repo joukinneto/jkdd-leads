@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="/jkdd-family-finance/">
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0B1F33">
+  <meta name="description" content="JKDD Family Finance — controle financeiro familiar simples, visual e seguro.">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="JKDD Finance">
+  <link rel="apple-touch-icon" href="/jkdd-family-finance/icons/Icon-192.png">
+  <link rel="icon" type="image/png" href="/jkdd-family-finance/favicon.png">
+  <title>JKDD Family Finance</title>
+  <style>
+    html,body{height:100%;margin:0;background:#f6f8fb}
+    #jff-boot{position:fixed;inset:0;display:grid;place-items:center;font-family:Arial,sans-serif;color:#0f766e;background:#f6f8fb;z-index:9999}
+    #jff-boot[hidden]{display:none}
+    .jff-card{padding:24px 28px;border-radius:20px;background:white;box-shadow:0 10px 30px rgba(0,0,0,.08);text-align:center;max-width:320px}
+    .jff-spinner{width:32px;height:32px;border:3px solid #d7eeeb;border-top-color:#0f766e;border-radius:50%;margin:0 auto 14px;animation:jffspin .8s linear infinite}
+    @keyframes jffspin{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+  <div id="jff-boot">
+    <div class="jff-card">
+      <div class="jff-spinner"></div>
+      <div>Carregando JKDD Family Finance…</div>
+    </div>
+  </div>
+  <script src="/jkdd-family-finance/flutter.js"></script>
+  <script>
+    (async () => {
+      const status = document.getElementById('jff-boot');
+      try {
+        const sourceUrl = '/jkdd-family-finance/main.dart.js?v=continuo-password-9';
+        const response = await fetch(sourceUrl, { cache: 'no-store' });
+        if (!response.ok) throw new Error('APP_SOURCE_UNAVAILABLE');
+
+        let source = await response.text();
+        source = source
+          .replace('b.length>=12', 'b.length>=9')
+          .replaceAll('12 caracteres', '9 caracteres')
+          .replaceAll('pelo menos 12', 'pelo menos 9');
+
+        const entrypointUrl = URL.createObjectURL(
+          new Blob([source], { type: 'application/javascript' })
+        );
+
+        window._flutter = window._flutter || {};
+        _flutter.buildConfig = {
+          engineRevision: '0cd610717bde95fd88343c64f81c11ba4e5c0010',
+          builds: [
+            {
+              compileTarget: 'dart2js',
+              renderer: 'canvaskit',
+              mainJsPath: entrypointUrl
+            }
+          ]
+        };
+
+        await _flutter.loader.load({
+          config: {
+            assetBase: '/jkdd-family-finance/'
+          }
+        });
+
+        status.hidden = true;
+      } catch (error) {
+        console.error('JKDD Family Finance bootstrap failed', error);
+        status.innerHTML =
+          '<div class="jff-card"><strong>Não foi possível abrir o aplicativo agora.</strong><br><br>Atualize a página e tente novamente.</div>';
+      }
+    })();
+  </script>
+</body>
+</html>
