@@ -80,7 +80,7 @@ Then open `http://localhost:8000`. Python is only an example static server; it i
 ## Current boundaries and open work
 
 - **Client-side only:** login validates fields in the page and stores a local preview session; it is not real account authentication.
-- **Local persistence only:** the browser adapter uses `localStorage`. Records are not shared across devices or users and are not a secure production data store.
+- **Browser-profile storage, without user isolation:** the app uses fixed, account-independent `localStorage` keys. Anyone signing in through the preview in the same browser profile can see the same stored leads; signing out does not clear them. Records are not shared across separate browser profiles/devices, and this is not a secure production data store.
 - **No live lead channel verified:** a real website form, inbox, CRM or external intake source has not been demonstrated end to end.
 - **No autonomous outreach:** contact actions are human-reviewed records; the project does not make real calls or send unsolicited messages.
 - **No live AI provider verified:** the current copilot behavior is deterministic and local; an LLM connection is not present in the reviewed main flow.
