@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>JKDD Leads — P0 Agentic Core</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color-scheme:dark}
+    body{margin:0;background:#07111f;color:#eef6ff}
+    main{max-width:1180px;margin:auto;padding:24px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .card{background:#0f1c2e;border:1px solid #263b55;border-radius:16px;padding:16px}
+    input,select,button,textarea{width:100%;box-sizing:border-box;padding:10px;margin:5px 0 10px;border-radius:10px;border:1px solid #314763;background:#091524;color:#eef6ff}
+    button{cursor:pointer;background:#1597ff;color:#02101c;font-weight:800}
+    button.secondary{background:#172a42;color:#eef6ff}
+    pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#071b2b;border:1px solid #224e6c;padding:12px;border-radius:12px;max-height:430px;overflow:auto}
+    .ok{color:#65e6a6}.muted{color:#91a7c0}.pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#14243a}
+    @media(max-width:800px){.grid{grid-template-columns:1fr}main{padding:14px}}
+  </style>
+</head>
+<body>
+<main>
+  <h1>🎯 JKDD Leads — P0 Agentic Core</h1>
+  <p class="muted">Development/Test only · Production 🔒 untouched · zero paid dependencies</p>
+
+  <div class="grid">
+    <section class="card">
+      <h2>1. Lead intake</h2>
+      <input id="name" value="Pilot Customer" placeholder="Name">
+      <input id="phone" value="(561) 555-0100" placeholder="Phone">
+      <input id="email" value="pilot@example.com" placeholder="Email">
+      <input id="service" value="Finish Carpentry" placeholder="Service">
+      <input id="location" value="Boca Raton, FL" placeholder="Location">
+      <select id="urgency">
+        <option value="now">Now</option>
+        <option value="30d">Within 30 days</option>
+        <option value="later">Later</option>
+      </select>
+      <select id="budget">
+        <option value="clear">Budget clear</option>
+        <option value="unknown">Budget unknown</option>
+      </select>
+      <button id="ingest">Ingest / deduplicate</button>
+      <div id="leadResult" class="muted">No lead yet.</div>
+    </section>
+
+    <section class="card">
+      <h2>2. Evidence + qualification</h2>
+      <button id="evidence" class="secondary">Record accepted form evidence</button>
+      <button id="qualify">Qualify lead</button>
+      <div id="qualification" class="muted">Waiting for lead.</div>
+    </section>
+
+    <section class="card">
+      <h2>3. Follow-up queue</h2>
+      <textarea id="reason" rows="3">Customer requested a callback after reviewing project photos.</textarea>
+      <input id="due" type="datetime-local">
+      <button id="schedule">Schedule reasoned recheck</button>
+      <button id="claim" class="secondary">Claim due work as JL-FOLLOWUP-A</button>
+      <button id="complete" class="secondary">Complete leased task</button>
+      <div id="taskResult" class="muted">No task yet.</div>
+    </section>
+
+    <section class="card">
+      <h2>4. P0 state / audit</h2>
+      <span class="pill" id="summary">0 leads · 0 evidence · 0 tasks · 0 events</span>
+      <pre id="state"></pre>
+    </section>
+  </div>
+</main>
+
+<script src="./agentic-core.js"></script>
+<script>
+(() => {
+  const P0 = window.JKDDLeadsP0;
+  const state = P0.createState();
+  let currentLeadId = null;
+  let currentTaskId = null;
+  const $ = (id) => document.getElementById(id);
+
+  const now = () => new Date().toISOString();
+  const render = () => {
+    $("summary").textContent =
+      state.leads.length + " leads · " +
+      state.evidence.length + " evidence · " +
+      state.tasks.length + " tasks · " +
+      state.audit.length + " events";
+    $("state").textContent = JSON.stringify(state, null, 2);
+  };
+
+  const tomorrowLocal = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  tomorrowLocal.setMinutes(tomorrowLocal.getMinutes() - tomorrowLocal.getTimezoneOffset());
+  $("due").value = tomorrowLocal.toISOString().slice(0,16);
+
+  $("ingest").onclick = () => {
+    try {
+      const result = P0.ingestLead(state, {
+        name: $("name").value,
+        phone: $("phone").value,
+        email: $("email").value,
+        service: $("service").value,
+        location: $("location").value,
+        urgency: $("urgency").value,
+        budget: $("budget").value
+      }, { source: "p0-demo", now: now() });
+      currentLeadId = result.lead.id;
+      $("leadResult").innerHTML =
+        '<span class="ok">' + (result.duplicate ? "Duplicate matched" : "Canonical lead created") +
+        "</span> · " + result.lead.id + " · " + result.lead.fingerprint;
+      render();
+    } catch (error) {
+      $("leadResult").textContent = error.message;
+    }
+  };
+
+  $("evidence").onclick = () => {
+    if (!currentLeadId) return alert("Ingest a lead first.");
+    P0.recordEvidence(state, {
+      leadId: currentLeadId,
+      field: "service",
+      value: $("service").value,
+      sourceType: "form.submission",
+      sourceRef: "P0 demo form",
+      strength: "accepted",
+      observedAt: now()
+    }, { now: now() });
+    render();
+  };
+
+  $("qualify").onclick = () => {
+    if (!currentLeadId) return alert("Ingest a lead first.");
+    const q = P0.qualifyLead(state, currentLeadId, { now: now() });
+    $("qualification").innerHTML =
+      '<span class="ok">' + q.score + "/100 · " + q.band + "</span><br>" +
+      q.reasons.map((r) => "+" + r.points + " " + r.reason).join("<br>");
+    render();
+  };
+
+  $("schedule").onclick = () => {
+    if (!currentLeadId) return alert("Ingest a lead first.");
+    try {
+      const task = P0.scheduleRecheck(state, {
+        leadId: currentLeadId,
+        dueAt: new Date($("due").value).toISOString(),
+        reason: $("reason").value
+      }, { now: now() });
+      currentTaskId = task.id;
+      $("taskResult").textContent = task.id + " scheduled for " + task.dueAt;
+      render();
+    } catch (error) {
+      $("taskResult").textContent = error.message;
+    }
+  };
+
+  $("claim").onclick = () => {
+    const claimed = P0.claimDueTasks(state, {
+      workerId: "JL-FOLLOWUP-A",
+      now: now(),
+      leaseMs: 300000
+    });
+    if (claimed.length) currentTaskId = claimed[0].id;
+    $("taskResult").textContent = claimed.length
+      ? claimed.length + " task(s) leased to JL-FOLLOWUP-A"
+      : "No due/claimable task. Set the due time to now or earlier to test claiming.";
+    render();
+  };
+
+  $("complete").onclick = () => {
+    if (!currentTaskId) return alert("No task selected.");
+    try {
+      const task = P0.completeTask(state, {
+        taskId: currentTaskId,
+        workerId: "JL-FOLLOWUP-A",
+        result: { outcome: "p0-demo-complete" },
+        now: now()
+      });
+      $("taskResult").textContent = task.id + " completed.";
+      render();
+    } catch (error) {
+      $("taskResult").textContent = error.message;
+    }
+  };
+
+  render();
+})();
+</script>
+</body>
+</html>
