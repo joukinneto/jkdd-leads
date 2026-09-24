@@ -211,11 +211,11 @@ PASS requires:
 
 ## Implementation status — 2026-09-24
 
-The first P0 engine and the Development/Test UI wiring have been merged to §main§:
+The first P0 engine and the Development/Test UI wiring have been merged to `main`:
 
 - **Implemented:** lead normalization/fingerprinting, duplicate detection, evidence records, deterministic qualification, due-work queue and lease semantics, reason-required rechecks, append-only audit events, and a browser adapter.
-- **Automated checks passed:** §p0/self-test.cjs§ and §p0/browser-adapter-self-test.cjs§ ran successfully in the PR #10 CI workflow. The corresponding GitHub Pages deployment of main SHA §bccd0f5§ also succeeded.
-- **Runtime boundary:** the main UI uses browser-local state via §localStorage§. The P0 lab creates in-memory state. Neither is shared server persistence.
+- **Automated checks passed:** `p0/self-test.cjs` and `p0/browser-adapter-self-test.cjs` ran successfully in the PR #10 CI workflow. The corresponding GitHub Pages deployment of main SHA `bccd0f5` also succeeded.
+- **Runtime boundary:** the main UI uses browser-local state via `localStorage`. The P0 lab creates in-memory state. Neither is shared server persistence.
 - **Still pending:** connect and validate the approved lead source; capture pilot outcome metrics; connect CONTÍNUO runtime agents; implement governed server-side identity, storage and atomic shared queue claiming before multi-user/production use; perform real-browser desktop/mobile and safe end-to-end pilot validation.
 - **Environment:** Development/Test only. Production remains untouched.
 
