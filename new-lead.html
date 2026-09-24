@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>JKDD Leads — New Lead</title>
+<style>
+body{margin:0;background:#07111f;color:#eef6ff;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:900px;margin:auto;padding:24px}
+.card{background:#0f1c2e;border:1px solid #263b55;border-radius:18px;padding:20px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{display:grid;gap:6px}
+input,select,button,a{font:inherit}
+input,select{padding:12px;border-radius:10px;border:1px solid #314763;background:#091524;color:#eef6ff}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.btn{padding:11px 14px;border-radius:10px;border:1px solid #36516f;background:#172a42;color:#eef6ff;text-decoration:none;cursor:pointer}
+.primary{background:#1597ff;color:#02101c;font-weight:800;border:0}
+.note{margin:14px 0;padding:11px;border:1px solid #2a4a68;border-radius:10px;background:#10263b}
+.msg{margin:14px 0;padding:11px;border-radius:10px}
+.ok{background:#0b3026;border:1px solid #26715a}.err{background:#351a1a;border:1px solid #7d3434}
+@media(max-width:700px){main{padding:12px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+<div class="card">
+<h1>New Lead</h1>
+<p>Your draft is saved automatically in this browser.</p>
+<div id="msg"></div>
+<form id="leadForm">
+<div class="grid">
+<label>Name *<input id="name" required></label>
+<label>Phone<input id="phone" inputmode="tel"></label>
+<label>Email<input id="email" type="email"></label>
+<label>Service<input id="service" value="Finish Carpentry"></label>
+<label>Location<input id="location" value="Boca Raton, FL"></label>
+<label>Urgency<select id="urgency"><option value="now">Now</option><option value="30d" selected>Within 30 days</option><option value="later">Later</option></select></label>
+<label>Budget<select id="budget"><option value="clear">Budget is clear</option><option value="unknown" selected>Budget not defined yet</option></select></label>
+</div>
+<div class="note">Saving runs Intake → Deduplication → Evidence → Qualification → Work Queue.</div>
+<div class="actions">
+<button class="btn primary" type="submit">Save Lead</button>
+<a class="btn" href="./index.html">Back to Leads</a>
+</div>
+</form>
+</div>
+</main>
+<script src="./p0/agentic-core.js"></script>
+<script src="./p0/browser-adapter.js"></script>
+<script>
+(()=>{
+const draftKey="jkdd-leads.new-lead-draft.v1";
+const listKey="jkdd-leads.pages.preview.v1";
+const ids=["name","phone","email","service","location","urgency","budget"];
+const p0=window.JKDDLeadsP0Browser.createBrowserAdapter();
+const msg=document.getElementById("msg");
+function saveDraft(){const d={};ids.forEach(id=>d[id]=document.getElementById(id).value);localStorage.setItem(draftKey,JSON.stringify(d))}
+function loadDraft(){try{const d=JSON.parse(localStorage.getItem(draftKey)||"{}");ids.forEach(id=>{if(d[id]!==undefined)document.getElementById(id).value=d[id]})}catch{}}
+ids.forEach(id=>{const el=document.getElementById(id);el.addEventListener("input",saveDraft);el.addEventListener("change",saveDraft)});
+document.getElementById("leadForm").addEventListener("submit",e=>{
+e.preventDefault();
+const x={name:document.getElementById("name").value.trim(),phone:document.getElementById("phone").value.trim(),email:document.getElementById("email").value.trim(),service:document.getElementById("service").value.trim(),location:document.getElementById("location").value.trim(),urgency:document.getElementById("urgency").value,budget:document.getElementById("budget").value,source:"MANUAL"};
+try{
+const r=p0.ingestAndQualify(x,{source:"jkdd-leads-ui",followUpReason:"New qualified lead requires human-reviewed first contact."});
+let leads=[];try{leads=JSON.parse(localStorage.getItem(listKey)||"[]")}catch{}
+let local=leads.find(l=>l.p0Id===r.canonicalLead.id);
+if(!local){local={id:"LD-"+(1001+leads.length),...x,p0Id:r.canonicalLead.id,status:r.qualification.score>=60?"QUALIFIED":"NEW",score:r.qualification.score,band:r.qualification.band,days:0};leads.unshift(local);localStorage.setItem(listKey,JSON.stringify(leads))}
+localStorage.removeItem(draftKey);
+msg.innerHTML='<div class="msg ok"><b>Lead saved.</b><br>Score: '+r.qualification.score+'/100 · '+r.qualification.band+'<br><br><a class="btn primary" href="./index.html">Return to Leads</a></div>';
+document.getElementById("leadForm").style.display="none";
+}catch(err){msg.innerHTML='<div class="msg err">'+String(err.message||err)+'</div>'}
+});
+loadDraft();
+})();
+</script>
+</body>
+</html>
