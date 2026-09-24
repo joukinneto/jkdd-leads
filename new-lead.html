@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07111f">
+  <meta name="robots" content="noindex,nofollow">
+  <title>JKDD Leads — New Lead</title>
+  <style>
+    :root{--bg:#07111f;--p:#0f1c2e;--line:#263b55;--t:#eef6ff;--m:#91a7c0;--b:#1597ff}
+    *{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#06101d,#0b1a2b 55%,#0b2440);color:var(--t);font:15px system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+    button,input,select{font:inherit}.wrap{max-width:980px;margin:auto;padding:24px}.card{background:rgba(15,28,46,.97);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 20px 60px #0007}
+    .top{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:18px}.muted{color:var(--m)}h1,h2{margin:.2em 0}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:grid;gap:6px}.field.full{grid-column:1/-1}
+    .field input,.field select{width:100%;background:#091524;border:1px solid #314763;color:var(--t);padding:13px;border-radius:12px;outline:none}
+    .field input:focus,.field select:focus{border-color:#1597ff;box-shadow:0 0 0 3px #1597ff22}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.btn{border:1px solid #36516f;background:#172a42;color:var(--t);padding:11px 15px;border-radius:11px;cursor:pointer;text-decoration:none;display:inline-block}
+    .btn.primary{background:linear-gradient(135deg,#0d86e8,#1ab6ff);color:#02101c;border:0;font-weight:800}.notice{padding:11px 13px;border-radius:12px;background:#10263b;border:1px solid #2a4a68;margin:14px 0;color:#cfeaff}.error{background:#351a1a;border-color:#7d3434;color:#ffc4c4}.success{background:#0b3026;border-color:#26715a;color:#adf3d8}
+    .steps{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.step{padding:6px 9px;border-radius:999px;background:#13243a;color:#b9cbe0;font-size:12px}
+    @media(max-width:700px){.wrap{padding:12px}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.top{align-items:flex-start;flex-direction:column}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <div class="top">
+        <div>
+          <div class="muted">JKDD Leads · Development/Test</div>
+          <h1>➕ New Lead</h1>
+          <p class="muted">This is a full-page form. Your draft is saved automatically in this browser.</p>
+        </div>
+        <a class="btn" href="./index.html">← Back to Leads</a>
+      </div>
+
+      <div class="steps">
+        <span class="step">Intake</span><span class="step">Deduplication</span><span class="step">Evidence</span><span class="step">Qualification</span><span class="step">Work Queue</span>
+      </div>
+
+      <div id="message"></div>
+
+      <form id="leadForm">
+        <div class="grid">
+          <div class="field">
+            <label for="name">Name *</label>
+            <input id="name" name="name" autocomplete="name" required placeholder="Customer name">
+          </div>
+          <div class="field">
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" inputmode="tel" autocomplete="tel" placeholder="(561) 555-0199">
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email" placeholder="customer@example.com">
+          </div>
+          <div class="field">
+            <label for="service">Service</label>
+            <input id="service" name="service" value="Finish Carpentry" placeholder="Finish Carpentry">
+          </div>
+          <div class="field">
+            <label for="location">Location</label>
+            <input id="location" name="location" value="Boca Raton, FL" placeholder="Boca Raton, FL">
+          </div>
+          <div class="field">
+            <label for="urgency">Urgency</label>
+            <select id="urgency" name="urgency">
+              <option value="now">Now</option>
+              <option value="30d" selected>Within 30 days</option>
+              <option value="later">Later</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="budget">Budget</label>
+            <select id="budget" name="budget">
+              <option value="clear">Budget is clear</option>
+              <option value="unknown" selected>Budget not defined yet</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Source</label>
+            <input value="JKDD Leads UI · Development/Test" disabled>
+          </div>
+        </div>
+
+        <div class="notice">Saving runs the P0 flow automatically: Intake → Deduplication → Evidence → Qualification → Work Queue.</div>
+        <div class="toolbar">
+          <button class="btn primary" type="submit">Save Lead</button>
+          <a class="btn" href="./index.html">Cancel</a>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <script src="./p0/agentic-core.js"></script>
+  <script src="./p0/browser-adapter.js"></script>
+  <script>
+    (() => {
+      "use strict";
+      const DRAFT_KEY = "jkdd-leads.new-lead-draft.v1";
+      const LIST_KEY = "jkdd-leads.pages.preview.v1";
+      const P0 = window.JKDDLeadsP0Browser.createBrowserAdapter();
+      const form = document.getElementById("leadForm");
+      const message = document.getElementById("message");
+      const fields = ["name","phone","email","service","location","urgency","budget"];
+
+      function getDraft() {
+        try { return JSON.parse(localStorage.getItem(DRAFT_KEY) || "{}"); }
+        catch { return {}; }
+      }
+
+      function saveDraft() {
+        const value = {};
+        fields.forEach((id) => value[id] = document.getElementById(id).value);
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(value));
+      }
+
+      function loadDraft() {
+        const draft = getDraft();
+        fields.forEach((id) => {
+          if (Object.prototype.hasOwnProperty.call(draft, id)) document.getElementById(id).value = draft[id];
+        });
+      }
+
+      function legacyLeads() {
+        try { return JSON.parse(localStorage.getItem(LIST_KEY) || "[]"); }
+        catch { return []; }
+      }
+
+      function saveLegacyLead(result, input) {
+        const leads = legacyLeads();
+        const existing = leads.find((lead) => lead.p0Id === result.canonicalLead.id);
+        if (existing) return existing;
+
+        const lead = {
+          id: "LD-" + (1001 + leads.length),
+          name: input.name,
+          phone: input.phone,
+          email: input.email,
+          service: input.service,
+          location: input.location,
+          urgency: input.urgency,
+          budget: input.budget,
+          p0Id: result.canonicalLead.id,
+          status: result.qualification.score >= 60 ? "QUALIFIED" : "NEW",
+          score: result.qualification.score,
+          band: result.qualification.band,
+          source: "MANUAL",
+          days: 0
+        };
+        leads.unshift(lead);
+        localStorage.setItem(LIST_KEY, JSON.stringify(leads));
+        return lead;
+      }
+
+      fields.forEach((id) => {
+        const el = document.getElementById(id);
+        el.addEventListener("input", saveDraft);
+        el.addEventListener("change", saveDraft);
+      });
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        message.innerHTML = "";
+
+        const input = {
+          name: document.getElementById("name").value.trim(),
+          phone: document.getElementById("phone").value.trim(),
+          email: document.getElementById("email").value.trim(),
+          service: document.getElementById("service").value.trim(),
+          location: document.getElementById("location").value.trim(),
+          urgency: document.getElementById("urgency").value,
+          budget: document.getElementById("budget").value,
+          source: "MANUAL"
+        };
+
+        if (!input.name) {
+          message.innerHTML = '<div class="notice error">Name is required.</div>';
+          return;
+        }
+
+        try {
+          const result = P0.ingestAndQualify(input, {
+            source: "jkdd-leads-ui",
+            followUpReason: "New qualified lead requires human-reviewed first contact."
+          });
+
+          const localLead = saveLegacyLead(result, input);
+          localStorage.removeItem(DRAFT_KEY);
+
+          message.innerHTML =
+            '<div class="notice success"><b>Lead saved.</b><br>' +
+            (result.duplicate ? 'Duplicate detected — the canonical lead was reused.' : 'New canonical lead created.') +
+            '<br>Score: ' + result.qualification.score + '/100 · ' + result.qualification.band +
+            '<br>Local record: ' + localLead.id +
+            '<br><br><a class="btn primary" href="./index.html">Return to Leads</a></div>';
+
+          form.style.display = "none";
+        } catch (error) {
+          message.innerHTML = '<div class="notice error">Agentic P0: ' + String(error.message || error) + '</div>';
+        }
+      });
+
+      loadDraft();
+    })();
+  </script>
+</body>
+</html>
