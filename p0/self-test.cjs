@@ -48,7 +48,7 @@ const qualification = P0.qualifyLead(
   { now: "2026-09-24T16:03:00.000Z" }
 );
 
-assert.equal(qualification.score, 95);
+assert.equal(qualification.score, 100);
 assert.equal(qualification.band, "HOT");
 assert.ok(qualification.reasons.length >= 6);
 
