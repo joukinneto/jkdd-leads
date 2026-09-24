@@ -209,12 +209,26 @@ PASS requires:
 8. the lease owner can complete the task;
 9. the audit trail contains the lifecycle evidence.
 
+## Implementation status — 2026-09-24
+
+The first P0 engine and the Development/Test UI wiring have been merged to `main`:
+
+- **Implemented:** lead normalization/fingerprinting, duplicate detection, evidence records, deterministic qualification, due-work queue and lease semantics, reason-required rechecks, append-only audit events, and a browser adapter.
+- **Automated checks passed:** `p0/self-test.cjs` and `p0/browser-adapter-self-test.cjs` ran successfully in the PR #10 CI workflow. The corresponding GitHub Pages deployment of main SHA `bccd0f5` also succeeded.
+- **Runtime boundary:** the main UI uses browser-local state via `localStorage`. The P0 lab creates in-memory state. Neither is shared server persistence.
+- **Still pending:** connect and validate the approved lead source; capture pilot outcome metrics; connect CONTÍNUO runtime agents; implement governed server-side identity, storage and atomic shared queue claiming before multi-user/production use; perform real-browser desktop/mobile and safe end-to-end pilot validation.
+- **Environment:** Development/Test only. Production remains untouched.
+
+Evidence: [P0 issue #8](https://github.com/joukinneto/jkdd-leads/issues/8), [UI wiring PR #10](https://github.com/joukinneto/jkdd-leads/pull/10), [CI run 36035063384](https://github.com/joukinneto/jkdd-leads/actions/runs/36035063384), and [Pages deployment run 36035106783](https://github.com/joukinneto/jkdd-leads/actions/runs/36035106783).
+
 ## 11. Next implementation after this contract
 
-After P0 core tests pass:
-1. wire the existing JKDD Leads UI to this core in Development/Test;
-2. persist pilot metrics;
-3. connect the lead-intake source already used by JKDD Finish;
-4. connect JKDD Continuous runtime agents;
-5. test a real/safely staged lead end-to-end;
-6. only then expand channels or enrichment.
+The first implementation steps in the original contract are complete in the current source: the P0 core has self-tests, and PR #10 wires the existing UI through the browser adapter. The remaining ordered work is:
+
+1. **Complete the first pilot evidence loop** tracked by [issue #7](https://github.com/joukinneto/jkdd-leads/issues/7): use a safely staged flow, then record intake, contact, appointment, estimate, won-job, revenue and time-to-first-contact evidence.
+2. **Connect the approved lead-intake source** used by JKDD Finish in Development/Test and prove one end-to-end record with provenance and duplicate handling.
+3. **Persist pilot metrics** so results survive browser/device changes and can be audited.
+4. **Connect CONTÍNUO runtime agents** under the existing human-review and cost boundaries.
+5. **Design governed server-side identity, storage and atomic queue claiming** before any multi-user or Production use.
+6. Keep expansion, paid enrichment and new outreach channels deferred until the pilot evidence identifies a concrete need.
+
