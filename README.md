@@ -6,7 +6,7 @@
 
 **Capture → qualify → prioritize → review → follow up**
 
-[![Dev/Test CI](https://github.com/joukinneto/jkdd-leads/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/joukinneto/jkdd-leads/actions/workflows/ci.yml)
+[🔎 CI workflow and recent runs](https://github.com/joukinneto/jkdd-leads/actions/workflows/ci.yml)
 [![GitHub Pages](https://github.com/joukinneto/jkdd-leads/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/joukinneto/jkdd-leads/actions/workflows/pages.yml)
 ![Environment: Development/Test](https://img.shields.io/badge/environment-Development%2FTest-orange)
 
