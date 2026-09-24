@@ -51,7 +51,7 @@ flowchart TD
   Tests -. verify .-> Adapter
 ```
 
-The product registry classifies `jkdd-leads` as an independent product with `foundation_required: false` and product-specific authentication. The local README's Foundation ownership statement still governs shared capabilities where reused; no Foundation runtime or authentication integration is claimed for this prototype.
+The central repository registry classifies `jkdd-leads` as an independent product with `foundation_required: false` and product-specific authentication. The CONTÍNUO global policy does not force the Foundation runtime into independent products. No Foundation runtime or authentication integration is claimed for this prototype; any shared Foundation capabilities adopted later remain subject to Foundation ownership.
 
 ## Verification actually performed
 
