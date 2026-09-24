@@ -23,3 +23,8 @@ jobs:
           grep -q "Voice Lab" index.html
           ! grep -Eq "945.?275.?4375|561.?990.?6825|561.?990.?6807" index.html
           echo "STATIC_VALIDATION=PASS"
+
+      - name: Validate P0 Agentic Lead Core
+        run: |
+          set -e
+          node p0/self-test.cjs
