@@ -31,4 +31,5 @@ jobs:
           node p0/browser-adapter-self-test.cjs
           grep -q 'p0/agentic-core.js' index.html
           grep -q 'p0/browser-adapter.js' index.html
-          grep -q '0.7.0-agentic-p0' index.html
+          grep -q '0.8.0-full-page-lead' index.html
+          test -f new-lead.html
