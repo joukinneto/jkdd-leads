@@ -1,16 +1,16 @@
 # JKDD Leads — Status and Audit
 
-**Review date:** 2026-09-24 (UTC)  
+**Review date:** 2026-09-25 (UTC)  
 **Repository:** [joukinneto/jkdd-leads](https://github.com/joukinneto/jkdd-leads)  
-**Reviewed branch / commit:** `main` / `bccd0f5967e9f33fa36347453a2f3ddc8dbf96cc`  
+**Reviewed branch / commit:** `main` / `93dd50204e590387ccb1796d90c2f1acf5ec106d`  
 **Environment:** Development/Test  
 **Production:** Untouched
 
 ## Executive summary
 
-JKDD Leads is an early static-web prototype with a useful, automated-tested P0 lead-processing slice. The P0 engine, browser adapter and standalone lab are implemented. PRs [#9](https://github.com/joukinneto/jkdd-leads/pull/9) and [#10](https://github.com/joukinneto/jkdd-leads/pull/10) are merged to `main`. Both P0 Node self-tests passed in the PR #10 GitHub Actions run, and a subsequent GitHub Pages deployment of the integrated `main` commit succeeded.
+JKDD Leads is an early static-web prototype with a useful, automated-tested P0 lead-processing slice. The P0 engine, browser adapter and standalone lab are implemented. PRs [#9](https://github.com/joukinneto/jkdd-leads/pull/9), [#10](https://github.com/joukinneto/jkdd-leads/pull/10), [#12](https://github.com/joukinneto/jkdd-leads/pull/12) and [#13](https://github.com/joukinneto/jkdd-leads/pull/13) are merged to `main`. The latest reviewed CI run [36073976076](https://github.com/joukinneto/jkdd-leads/actions/runs/36073976076) and Pages deployment [36074001435](https://github.com/joukinneto/jkdd-leads/actions/runs/36074001435) succeeded for main SHA `93dd502`. A synthetic browser pass of the isolated P0 lab also succeeded on 2026-09-25.
 
-This is **not a complete or production-ready CRM**. The main interface uses browser-local state, the login is a client-side preview flow, and no live lead source, shared backend, real account authentication, real outreach or measured pilot outcome was verified. The first-pilot experiment [#7](https://github.com/joukinneto/jkdd-leads/issues/7) and technical P0 tracking issue [#8](https://github.com/joukinneto/jkdd-leads/issues/8) remain open.
+This is **not a complete or production-ready CRM**. The main interface uses browser-local state, the login is a client-side preview flow, and no live lead source, shared backend, real account authentication, real outreach or measured pilot outcome was verified. The first-pilot experiment [#7](https://github.com/joukinneto/jkdd-leads/issues/7) and technical P0 tracking issue [#8](https://github.com/joukinneto/jkdd-leads/issues/8) remain the outstanding validation tracks.
 
 ### Status criteria
 
@@ -24,13 +24,13 @@ This is **not a complete or production-ready CRM**. The main interface uses brow
 
 | Capability | Status | Evidence / limits |
 | --- | --- | --- |
-| Main single-page UI | Implemented in source; runtime not independently smoke-tested in this audit | `index.html` includes first-access form, dashboard, lead inbox, lead entry, rules-based copilot, Voice Lab and settings. Its local login is not real authentication. |
+| Main UI and dedicated lead form | Implemented in source; authenticated flow not browser-validated | `index.html` and `new-lead.html`; navigation/form changes merged in PRs #12/#13. Local preview login is not real authentication. |
 | P0 canonical lead intake and duplicate detection | Implemented; Node self-test passed in CI | `p0/agentic-core.js` fingerprints normalized email, phone or name/location and records duplicate events. |
 | Evidence and deterministic qualification | Implemented; Node self-test passed in CI | Evidence carries a source and strength; score bands and reasons are deterministic. Scores are pilot heuristics, not ML predictions. |
 | Due-work queue and recheck | Implemented in the local P0 engine; Node self-test passed in CI | Tests cover due-task claim, active-lease exclusion and completion by the lease owner. This is not a transactional shared server queue. |
 | Browser adapter and persistence | Implemented; adapter self-test passed in CI | `p0/browser-adapter.js` serializes app state to browser `localStorage`. The CI self-test uses test storage; no real browser persistence or multi-device test was run here. |
-| P0 Agentic Lab | Implemented in source; runtime not independently smoke-tested in this audit | `p0/demo.html` uses sample values and in-memory P0 state to demonstrate the core flow. |
-| GitHub Pages Dev/Test deployment | Deployed for reviewed main SHA | [Latest reviewed successful deployment](https://github.com/joukinneto/jkdd-leads/actions/runs/36035106783), attempt 2. A successful deployment is not proof of a tested user journey. |
+| P0 Agentic Lab | Browser-tested with synthetic data on 2026-09-25 | `p0/demo.html`: intake, accepted evidence, deterministic qualification, duplicate rejection, reasoned follow-up, due task claim/completion and audit summary. Isolated in-memory demo only; no backend/auth/customer data. |
+| GitHub Pages Dev/Test deployment | Deployed for reviewed main SHA | [Reviewed successful deployment](https://github.com/joukinneto/jkdd-leads/actions/runs/36074001435), main SHA `93dd502`. A successful deployment is not proof of a tested user journey. |
 | Live lead form / inbox integration | Not verified / pending | No connected inbound source or end-to-end external lead was evidenced in the reviewed files, CI or open pilot issue. |
 | Real authentication, shared database, multi-user operation | Not implemented in the reviewed main flow | The login/session flow is client-side and the P0 adapter stores state locally. |
 | Automated customer calls or messages | Not implemented | Voice Lab is a rehearsal view; the code labels calls as manual and does not show a real call provider. |
@@ -57,33 +57,33 @@ The central repository registry classifies `jkdd-leads` as an independent produc
 
 ### GitHub Actions evidence
 
-1. **P0 CI:** [run 36035063384](https://github.com/joukinneto/jkdd-leads/actions/runs/36035063384), workflow `JKDD Leads Dev/Test CI`, PR #10 candidate branch. The completed job shows both `Validate app` and `Validate P0 Agentic Lead Core` succeeded. The configured commands include:
+1. **Latest CI:** [run 36073976076](https://github.com/joukinneto/jkdd-leads/actions/runs/36073976076), reviewed as successful for current `main` SHA `93dd502`. Earlier P0 run [36035063384](https://github.com/joukinneto/jkdd-leads/actions/runs/36035063384) shows the configured P0 test commands, including:
    - `node p0/self-test.cjs`
    - `node p0/browser-adapter-self-test.cjs`
    - static checks for the app elements and the P0 script wiring.
-2. **Pages deployment:** [run 36035106783](https://github.com/joukinneto/jkdd-leads/actions/runs/36035106783), main SHA `bccd0f5`, completed successfully on attempt 2.
-3. **Earlier runs:** the API history includes failed runs as well as successful ones. The latest reviewed P0 CI and Pages deployment for PR #10 / merged main are successful; the history is not uniformly green.
+2. **Pages deployment:** [run 36074001435](https://github.com/joukinneto/jkdd-leads/actions/runs/36074001435), main SHA `93dd502`, completed successfully.
+3. **Earlier runs:** the history includes failures as well as successes; success of the latest runs does not imply the entire history is green.
 
 ### Scope of the validation
 
-The above confirms source-level/static checks, two Node self-tests and successful static deployment. It does **not** confirm:
+The Actions runs confirm configured static checks and Node self-tests passed, and the Pages deployment succeeded. In addition, the published P0 Agentic Lab was exercised manually with synthetic values on 2026-09-25. The browser pass observed one lead created, accepted evidence recorded, a deterministic HOT score for the fixture, a repeated contact rejected as duplicate, a reasoned follow-up scheduled, a due task claimed/completed, and audit events displayed. This confirms only that lab workflow in that browser session; it does **not** confirm:
 
-- a person can complete the deployed UI flow in a real desktop or phone browser;
-- real localStorage operation across reloads in a deployed browser;
+- the authenticated main application flow or responsive desktop/mobile behavior (the preview showed its first-access form; no account was created);
+- deployed main-app localStorage persistence across reloads;
 - a connected production-like lead source or external CRM;
 - real authentication, access control, privacy or tenant isolation;
 - real WhatsApp/SMS/phone delivery;
 - server-side concurrent queue claiming;
 - end-to-end pilot or revenue outcomes.
 
-I did not run the Node tests locally during this documentation audit.
+I did not rerun the Node tests locally. The P0 lab browser pass used synthetic data and in-memory state; it did not test authentication, backend persistence, a second worker in the UI, external lead sources or real pilot outcomes.
 
 ## Repository and workflow snapshot
 
-- **Default branch:** `main`; reviewed head `bccd0f5`.
+- **Default branch:** `main`; reviewed head `93dd502`.
 - **Branches:** 9 listed at review; none reported as protected by the branches API. GitHub's repository page also showed the main-branch protection notice.
 - **Issues:** 4 open issues were returned: [#1](https://github.com/joukinneto/jkdd-leads/issues/1), [#6](https://github.com/joukinneto/jkdd-leads/issues/6), [#7](https://github.com/joukinneto/jkdd-leads/issues/7), [#8](https://github.com/joukinneto/jkdd-leads/issues/8).
-- **Pull requests:** #9 and #10 are merged. Draft PRs [#2](https://github.com/joukinneto/jkdd-leads/pull/2) and [#5](https://github.com/joukinneto/jkdd-leads/pull/5) remain open.
+- **Pull requests:** #9, #10, #12 and #13 are merged. Other open PR state was not re-audited for this update.
 - **Actions:** recent PR checks and the latest Pages deploy succeeded; older runs include failures. CI runs on pull requests and manual dispatch; Pages deploys on pushes to `main` and manual dispatch.
 - **Releases / tags:** no published releases were visible in the reviewed GitHub repository page; the page showed zero tags.
 - **License:** no `LICENSE` file and repository metadata returned no license. Do not imply an open-source reuse license.
@@ -130,4 +130,4 @@ I did not run the Node tests locally during this documentation audit.
 - Central JKDD Foundation governance: CONTÍNUO skill, Global Repository Policy and Repository Registry. Registry entry: `class: independent-product`, `foundation_required: false`, `auth_model: product-specific`.
 - Source tree at reviewed main: `index.html`, `p0/agentic-core.js`, `p0/browser-adapter.js`, both P0 self-tests, `p0/demo.html`, and workflows `.github/workflows/ci.yml` and `.github/workflows/pages.yml`.
 - GitHub branches, recent commits, Issues, PRs, repository metadata and Actions run/job summaries cited above.
-- Review date: 2026-09-24 (UTC).
+- Review date: 2026-09-25 (UTC).
