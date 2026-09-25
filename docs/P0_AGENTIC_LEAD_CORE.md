@@ -209,17 +209,18 @@ PASS requires:
 8. the lease owner can complete the task;
 9. the audit trail contains the lifecycle evidence.
 
-## Implementation status — 2026-09-24
+## Implementation status — 2026-09-25
 
-The first P0 engine and the Development/Test UI wiring have been merged to `main`:
+The P0 engine, Development/Test UI wiring, dedicated new-lead page and navigation fix have been merged to `main` (PRs #9, #10, #12 and #13):
 
 - **Implemented:** lead normalization/fingerprinting, duplicate detection, evidence records, deterministic qualification, due-work queue and lease semantics, reason-required rechecks, append-only audit events, and a browser adapter.
-- **Automated checks passed:** `p0/self-test.cjs` and `p0/browser-adapter-self-test.cjs` ran successfully in the PR #10 CI workflow. The corresponding GitHub Pages deployment of main SHA `bccd0f5` also succeeded.
+- **Automated checks passed:** `p0/self-test.cjs` and `p0/browser-adapter-self-test.cjs` ran successfully in the PR #10 CI workflow. The latest reviewed CI run [36073976076](https://github.com/joukinneto/jkdd-leads/actions/runs/36073976076) and GitHub Pages deployment for main SHA `93dd502` [run 36074001435](https://github.com/joukinneto/jkdd-leads/actions/runs/36074001435) succeeded.
 - **Runtime boundary:** the main UI uses browser-local state via `localStorage`. The P0 lab creates in-memory state. Neither is shared server persistence.
-- **Still pending:** connect and validate the approved lead source; capture pilot outcome metrics; connect CONTÍNUO runtime agents; implement governed server-side identity, storage and atomic shared queue claiming before multi-user/production use; perform real-browser desktop/mobile and safe end-to-end pilot validation.
+- **Synthetic lab validation (2026-09-25):** published `p0/demo.html` was exercised in a browser using synthetic data. Intake, evidence, qualification, duplicate handling, reasoned follow-up, task claim/completion and audit output were observed. This does not validate the authenticated main UI, server persistence, multi-worker UI behavior, a connected lead source or a real pilot.
+- **Still pending:** connect and validate the approved lead source; capture pilot outcome metrics; connect CONTÍNUO runtime agents; implement governed server-side identity, storage and atomic shared queue claiming before multi-user/production use; validate the authenticated main app on desktop/mobile.
 - **Environment:** Development/Test only. Production remains untouched.
 
-Evidence: [P0 issue #8](https://github.com/joukinneto/jkdd-leads/issues/8), [UI wiring PR #10](https://github.com/joukinneto/jkdd-leads/pull/10), [CI run 36035063384](https://github.com/joukinneto/jkdd-leads/actions/runs/36035063384), and [Pages deployment run 36035106783](https://github.com/joukinneto/jkdd-leads/actions/runs/36035106783).
+Evidence: [P0 issue #8](https://github.com/joukinneto/jkdd-leads/issues/8), [UI wiring PR #10](https://github.com/joukinneto/jkdd-leads/pull/10), [full-page form PR #12](https://github.com/joukinneto/jkdd-leads/pull/12), [navigation fix PR #13](https://github.com/joukinneto/jkdd-leads/pull/13), [CI run 36073976076](https://github.com/joukinneto/jkdd-leads/actions/runs/36073976076), and [Pages deployment run 36074001435](https://github.com/joukinneto/jkdd-leads/actions/runs/36074001435).
 
 ## 11. Next implementation after this contract
 
