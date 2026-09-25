@@ -18,7 +18,7 @@
 
 > **Current state:** an early Development/Test prototype. The P0 lead core, browser adapter and standalone lab are in the repository and automated checks passed. The application has no production backend, real authentication or verified live lead-source integration. **Production is untouched.**
 
-**Last reviewed:** 2026-09-24 (UTC) · **Reviewed main SHA:** `bccd0f5`
+**Last reviewed:** 2026-09-25 (UTC) · **Reviewed main SHA:** `93dd502`
 
 ## What it is
 
@@ -34,11 +34,11 @@ JKDD Leads owns the lead record. CONTÍNUO remains the engineering orchestration
 
 | Area | Present in the repository | Evidence and boundary |
 | --- | --- | --- |
-| Main web interface | Login/setup screen, dashboard, lead inbox, lead form, rule-based copilot, settings and a Voice Lab rehearsal | `index.html`. These screens have not received an independent browser/mobile smoke test in this review. |
+| Main web interface | Login/setup screen, dashboard, lead inbox, dedicated full-page lead form, rule-based copilot, settings and a Voice Lab rehearsal | `index.html` and `new-lead.html`; navigation/form changes merged in [PR #12](https://github.com/joukinneto/jkdd-leads/pull/12) and [PR #13](https://github.com/joukinneto/jkdd-leads/pull/13). The authenticated main-app flow has not been browser-tested. |
 | P0 lead core | Normalization and fingerprints, duplicate detection, field evidence, deterministic qualification, due-work tasks, lease semantics and append-only audit events | `p0/agentic-core.js` and `docs/P0_AGENTIC_LEAD_CORE.md`; covered by a Node self-test in CI. |
 | Browser adapter | Connects the main interface to the P0 core and stores Dev/Test state in browser `localStorage` | `p0/browser-adapter.js`; adapter self-test covers intake, duplicate handling, a task lease and reload persistence with test storage. This is browser-local, not shared server storage. |
-| P0 Agentic Lab | Separate form to try intake, evidence, scoring, queue actions and audit output with sample data | `p0/demo.html`. It is a Development/Test demonstration, not a production service. |
-| GitHub Pages | A workflow validates and deploys the static repository from `main` | Latest successful deployment reviewed: [run 36035106783](https://github.com/joukinneto/jkdd-leads/actions/runs/36035106783), integrated SHA `bccd0f5`. This confirms deployment workflow success; it is not a user-journey or security certification. |
+| P0 Agentic Lab | Separate form to try intake, evidence, scoring, queue actions and audit output with sample data | `p0/demo.html`. A synthetic browser pass on 2026-09-25 covered intake, evidence, qualification, duplicate handling, reasoned follow-up, task claim/completion and audit output. It is an in-memory Dev/Test demonstration, not a production service. |
+| GitHub Pages | A workflow validates and deploys the static repository from `main` | Reviewed deployment: [run 36074001435](https://github.com/joukinneto/jkdd-leads/actions/runs/36074001435), main SHA `93dd502`. This confirms deployment workflow success; it is not a security or authenticated-app certification. |
 
 Qualification is a **pilot heuristic**, not a machine-learning result. The current copilot answers from local lead data with deterministic rules. The Voice Lab is a rehearsal surface; the current code says it does not place real calls.
 
@@ -67,7 +67,7 @@ node p0/self-test.cjs
 node p0/browser-adapter-self-test.cjs
 ```
 
-Both commands are invoked by the repository's [Development/Test CI workflow](.github/workflows/ci.yml). During this documentation review, I verified the successful GitHub Actions run; I did not rerun these commands locally.
+Both commands are invoked by the repository's [Development/Test CI workflow](.github/workflows/ci.yml). The latest reviewed successful CI run is [36073976076](https://github.com/joukinneto/jkdd-leads/actions/runs/36073976076). I did not rerun these commands locally.
 
 To serve the static interface from a local checkout, run a static file server from the repository root, for example:
 
@@ -92,7 +92,7 @@ See [STATUS.md](STATUS.md) for the audit evidence, open GitHub work, limitations
 
 ## Visual evidence
 
-The repository contains an executable-style P0 lab but no committed application screenshots, GIFs or product banner. This README uses a source-backed Mermaid diagram instead of presenting a mockup as a real screen. Add screenshots after capturing the current deployed Development/Test interface and checking desktop and mobile behavior.
+A synthetic browser QA screenshot was captured during the 2026-09-25 review, but is not committed as a repository asset. The authenticated main application has not been captured or validated. This README uses a source-backed Mermaid diagram instead of presenting a mockup as a real screen; capture desktop and mobile screenshots of the signed-in application after a governed test account is available.
 
 ## Governance and contribution
 
