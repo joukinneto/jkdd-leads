@@ -1,0 +1,48 @@
+# JKDD TECH — Claude Code executor (Live Office commands)
+#
+# Runs Claude Code when the Owner sends a command from office.jkddtech.com (the issue body
+# mentions @claude) or when someone with write access writes @claude in an issue or PR comment.
+#
+# Authentication: repository secret CLAUDE_CODE_OAUTH_TOKEN (Claude subscription, from
+# `claude setup-token`). Requires the Claude GitHub App on this repository.
+#
+# Governance: a command is a request, not an authorization. Claude works on a branch and opens a PR.
+# It never merges, never deploys Production, never touches secrets.
+
+name: Claude Code (JKDD executor)
+
+on:
+  issues:
+    types: [opened]
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+
+concurrency:
+  group: claude-${{ github.event.issue.number || github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  claude:
+    if: >-
+      (github.event_name == 'issues' && contains(github.event.issue.body, '@claude')) ||
+      (github.event_name != 'issues' && contains(github.event.comment.body, '@claude'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: |
+            --max-turns 40
+            --append-system-prompt "You are the JKDD TECH executor for this repository. Read AGENTS.md and CLAUDE.md first and follow them. Rules: (1) A command is a request, not an authorization. (2) Production is UNTOUCHED: no deploy, no Production migration, no secret or credential change, no destructive change. (3) Never push to main and never merge: work on one branch, open one PR, the Owner merges. (4) Respect module ownership; cross-module needs go back to the 01.0 Foundation Principal (no lateral routing). (5) No PASS without evidence. (6) Answer the Owner in Portuguese (pt-BR), short sentences, numbered steps; code and commits in English. (7) Report progress in the issue with one status line per update, exactly: [jkdd-status] agent=<agent_id from the issue> task=<REGISTRATION ID from the issue> status=<working|review|blocked|done> msg=\"<short text>\". Post status=working when you start and status=done (with evidence link) or status=blocked (with reason) at the end."
